@@ -8,7 +8,7 @@ GROUP BY YEAR(`enrolment_date`);
 
 2. Contare gli insegnanti che hanno l'ufficio nello stesso edificio
 
-SELECT COUNT(*) 
+SELECT `office_address`, COUNT(*) 
 FROM `teachers`
 GROUP BY `office_address`;
 
@@ -65,7 +65,7 @@ JOIN `degrees`
 ON `degrees`.`id` = `students`.`degree_id`
 JOIN `departments`
 ON `departments`.`id` = `degrees`.`department_id`
-ORDER BY `students`.`surname` ASC;
+ORDER BY `students`.`surname`, `students`.`name` ASC;
 
 5. Selezionare tutti i corsi di laurea con i relativi corsi e insegnanti
 
@@ -80,7 +80,7 @@ ON `course_teacher`.`teacher_id` = `teachers`.`id`;
 
 6. Selezionare tutti i docenti che insegnano nel Dipartimento di Matematica (54)
 
-SELECT DISTINCT `teachers`.`name`, `teachers`.`surname`, `departments`.`name`
+SELECT DISTINCT `teachers`.`id`, `teachers`.`name`, `teachers`.`surname`, `departments`.`name`
 FROM `teachers`
 JOIN `course_teacher`
 ON `course_teacher`.`teacher_id` = `teachers`.`id`
@@ -95,3 +95,14 @@ WHERE `departments`.`name` = 'Dipartimento di Matematica';
 7. BONUS: Selezionare per ogni studente quanti tentativi d’esame ha sostenuto per
 superare ciascuno dei suoi esami
 
+SELECT `students`.`id`, `students`.`name`, `students`.`surname`, `courses`.`name`,
+COUNT(`exam_student`.`vote`) AS `volte_che_ha_provato`,
+MAX(`exam_student`.`vote`) AS `voto_migliore` 
+FROM `students`
+JOIN `exam_student`
+ON `exam_student`.`student_id` = `students`.`id`
+JOIN `exams`
+ON `exams`.`id` = `exam_student`.`exam_id`
+JOIN `courses`
+ON `courses`.`id` = `exams`.`course_id`
+GROUP BY `students`.`id`, `courses`.`id`;
